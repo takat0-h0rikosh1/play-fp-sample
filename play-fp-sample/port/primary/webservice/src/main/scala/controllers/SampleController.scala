@@ -23,17 +23,17 @@ class SampleController @Inject()(cc: ControllerComponents) extends AbstractContr
 
 object UserFormBinder {
 
-  import NameFormatter._
+  import UserFormatter._
 
   val userForm = Form(
     mapping(
       "name" -> Forms.of[Name],
-      "textValue" -> set(Forms.of[TextValue]).verifying(_.nonEmpty)
+      "family" -> set(Forms.of[Name]).verifying(_.nonEmpty)
     )(User.apply)(User.unapply)
   )
 }
 
-object NameFormatter {
+object UserFormatter {
 
   implicit def userFormat: Formatter[Name] = new Formatter[Name] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Name] = {
@@ -57,7 +57,7 @@ object NameFormatter {
   }
 }
 
-case class User(name: Name, textValues: Set[TextValue])
+case class User(name: Name, family: Set[Name])
 
 case class Name(value: String)
 
