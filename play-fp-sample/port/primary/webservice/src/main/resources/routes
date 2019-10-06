@@ -7,6 +7,7 @@
 GET         /                    controllers.HomeController.index
 GET         /                    controllers.SampleController.index
 POST        /post                controllers.SampleController.post()
+GET         /customRouting       controllers.CustomRouteController.get(ageRange: controllers.AgeRange, hoge: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file        controllers.Assets.versioned(path="/public", file: Asset)
