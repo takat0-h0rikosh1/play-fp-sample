@@ -53,4 +53,4 @@ object Interval {
 
 case class Note(v: String)
 
-case class Limit(v: Int)
+case class Limit(v: Long)
