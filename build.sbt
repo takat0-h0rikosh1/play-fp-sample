@@ -92,8 +92,6 @@ lazy val portWebService = Project(
   base = webServiceBase
 ).settings(commonSettings, libraryDependencies ++= Seq(monix, guice))
   .settings(routesImport ++= Seq(
-    "controllers.CustomRouteBinder._",
-//    "controllers.NameBinder._",
     "bindable.Implicits._"
   ))
   .dependsOn(application % "compile->compile;test->test")

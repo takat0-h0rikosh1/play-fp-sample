@@ -7,7 +7,7 @@
 GET         /                    controllers.HomeController.index
 GET         /                    controllers.SampleController.index
 POST        /post                controllers.SampleController.post()
-GET         /customRouting       controllers.CustomRouteController.get(ageRange: controllers.AgeRange, hoge: String)
+GET         /customRouting       controllers.SampleBindableController.get(ageRange: bindable.AgeRange, hoge: String)
 GET         /search              controllers.SearchController.get(r: controllers.SearchRequest)
 
 # Map static resources from the /public folder to the /assets URL path
