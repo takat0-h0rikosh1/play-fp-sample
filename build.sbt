@@ -91,9 +91,7 @@ lazy val portWebService = Project(
   id = "port-web-service",
   base = webServiceBase
 ).settings(commonSettings, libraryDependencies ++= Seq(monix, guice))
-  .settings(routesImport ++= Seq(
-    "bindable.Implicits._"
-  ))
+  .settings(routesImport += "bindable.Implicits._")
   .dependsOn(application % "compile->compile;test->test")
   .enablePlugins(PlayScala)
   .disablePlugins(PlayLayoutPlugin)

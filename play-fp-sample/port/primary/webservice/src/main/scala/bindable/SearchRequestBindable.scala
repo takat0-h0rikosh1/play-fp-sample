@@ -1,19 +1,18 @@
 package bindable
 
-import java.time.{Clock, DayOfWeek}
+import java.time.DayOfWeek
 
 import cats.data.EitherT
 import cats.implicits._
 import controllers._
 import play.api.mvc.QueryStringBindable
 
-trait SearchRequestBindable {
+trait SearchRequestBindable extends BindableSupport {
 
-  type R = SearchRequest
-  type Params = Map[String, Seq[String]]
-  type Bindable[A] = QueryStringBindable[A]
-
-  implicit lazy val clock: Clock = Clock.systemDefaultZone()
+  private type R = SearchRequest
+  private type Params = Map[String, Seq[String]]
+  private type Bindable[A] = QueryStringBindable[A]
+  private type Bound[A] = Option[Either[String, A]]
 
   implicit def searchRequestBindable(
       implicit
@@ -22,7 +21,7 @@ trait SearchRequestBindable {
       intervalBindable: Bindable[Interval],
       dayOfWeekBinder: Bindable[Seq[DayOfWeek]]
   ): Bindable[R] = new Bindable[R] {
-    override def bind(key: String, params: Params): Option[Either[String, R]] = {
+    override def bind(key: String, params: Params): Bound[R] = {
       implicit val p: Params = params
       for {
         interval <- EitherT(intervalBindable.bind(key, params))
@@ -52,13 +51,5 @@ trait SearchRequestBindable {
       )
       keys.flatten.mkString("&")
     }
-
-    private def bindToRightOption[A](key: String)(
-        implicit params: Params,
-        bindable: Bindable[A]): Either[String, Option[A]] =
-      EitherT(bindable.bind(key, params))
-        .map(Option(_))
-        .value
-        .getOrElse(Right(None))
   }
 }

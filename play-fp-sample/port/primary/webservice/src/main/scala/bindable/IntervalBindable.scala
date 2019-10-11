@@ -2,12 +2,10 @@ package bindable
 
 import java.time.{Clock, ZonedDateTime}
 
-import cats.data.EitherT
-import cats.implicits._
 import controllers.Interval
 import play.api.mvc.QueryStringBindable
 
-trait IntervalBindable {
+trait IntervalBindable extends BindableSupport {
 
   private type Bindable[A] = QueryStringBindable[A]
   private type Params = Map[String, Seq[String]]
@@ -35,14 +33,5 @@ trait IntervalBindable {
           binder.unbind("to", value.from.toInstant.toEpochMilli)
         ).mkString("&")
 
-      private def bindToRightOption[A](key: String)(
-          implicit params: Params,
-          bindable: Bindable[A]): Either[String, Option[A]] =
-        EitherT(bindable.bind(key, params))
-          .map(Option(_))
-          .value
-          .getOrElse(Right(None))
-
     }
-
 }
