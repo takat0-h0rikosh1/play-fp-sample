@@ -27,92 +27,88 @@ lazy val commonSettings = Seq(
   scalacOptions in Test ++= Seq("-Yrangepos"),
   parallelExecution in Test := false,
   // パッケージング時scalaDoc作成しないため
-  sources in(Compile, doc) := Seq.empty,
-  publishArtifact in(Compile, packageDoc) := false,
+  sources in (Compile, doc) := Seq.empty,
+  publishArtifact in (Compile, packageDoc) := false,
   updateOptions := updateOptions.value.withCachedResolution(true),
   resolvers += Resolver.sonatypeRepo("releases")
 )
 
 lazy val coreBase = file("play-fp-sample")
 lazy val portBase = coreBase / "port"
-lazy val webServiceBase = portBase / "primary" / "webservice"
-lazy val portDBBase = portBase / "secondary" / "database"
+lazy val portWebServiceBase = portBase / "primary" / "webservice"
+lazy val portPersistenceBase = portBase / "secondary" / "persistence"
 
 lazy val persistenceDBConfLocal = ConfigFactory
   .defaultOverrides()
-  .withFallback(ConfigFactory.parseFile(portDBBase / "src" / "main" / "resources" / "db" / "db.local.conf"))
+  .withFallback(
+    ConfigFactory.parseFile(
+      portPersistenceBase / "src" / "main" / "resources" / "db" / "db.local.conf"
+    )
+  )
   .resolve()
 
 lazy val persistenceDBConfTest = ConfigFactory
   .defaultOverrides()
-  .withFallback(ConfigFactory.parseFile(portDBBase / "src" / "test" / "resources" / "application.conf"))
+  .withFallback(
+    ConfigFactory.parseFile(
+      portPersistenceBase / "src" / "test" / "resources" / "application.conf"
+    )
+  )
   .resolve()
 
-lazy val core = Project(
-  id = "core",
-  base = coreBase
-).settings(commonSettings)
+lazy val core = Project(id = "core", base = coreBase)
+  .settings(commonSettings)
   .enablePlugins(PlayScala)
   .disablePlugins(PlayLayoutPlugin)
   .settings(
     libraryDependencies := Seq(
       "org.scalikejdbc" %% "scalikejdbc" % scalikejdbcVer,
-      "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "2.7.0-scalikejdbc-3.3"
+      "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "2.7.0-scalikejdbc-3.3",
+      guice
     ),
     addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
-    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+    addCompilerPlugin(
+      "org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full
+    )
   )
   .aggregate(domain, application, port)
   .dependsOn(port % "compile->compile;test->test")
 
-lazy val domain = Project(
-  id = "domain",
-  base = coreBase / "domain"
-).settings(commonSettings)
+lazy val domain =
+  Project(id = "domain", base = coreBase / "domain").settings(commonSettings)
 
-lazy val application = Project(
-  id = "application",
-  base = coreBase / "application"
-).settings(commonSettings,
-  libraryDependencies += monix)
-  .dependsOn(domain % "compile->compile;test->test")
+lazy val application =
+  Project(id = "application", base = coreBase / "application")
+    .settings(commonSettings, libraryDependencies ++= Seq(monix, guice))
+    .dependsOn(domain % "compile->compile;test->test")
 
-lazy val port = Project(
-  id = "port",
-  base = portBase
-)
-  .aggregate(portWebService, portDB)
+lazy val port = Project(id = "port", base = portBase)
+  .aggregate(portWebService, portPersistence)
   .dependsOn(
     portWebService % "compile->compile;test->test",
-    portDB % "compile->compile;test->test",
+    portPersistence % "compile->compile;test->test"
   )
 
-lazy val portWebService = Project(
-  id = "port-web-service",
-  base = webServiceBase
-).settings(commonSettings, libraryDependencies ++= Seq(monix, guice))
-  .settings(routesImport += "bindable.Implicits._")
-  .dependsOn(application % "compile->compile;test->test")
-  .enablePlugins(PlayScala)
-  .disablePlugins(PlayLayoutPlugin)
+lazy val portWebService =
+  Project(id = "port-web-service", base = portWebServiceBase)
+    .settings(commonSettings, libraryDependencies ++= Seq(monix, guice))
+    .settings(routesImport += "bindable.Implicits._")
+    .dependsOn(application % "compile->compile;test->test")
+    .enablePlugins(PlayScala)
+    .disablePlugins(PlayLayoutPlugin)
 
-lazy val portDB = Project(
-  id = "port-database",
-  base = portDBBase
-).dependsOn(
-  application % "compile->compile;test->test"
-)
-  .settings(commonSettings)
-  .settings(
-    libraryDependencies ++= Seq(
-      "org.mariadb.jdbc" % "mariadb-java-client" % "1.5.7",
-      "org.skinny-framework" %% "skinny-orm" % "3.0.2",
-      "org.scalikejdbc" %% "scalikejdbc-test" % scalikejdbcVer % Test,
-      "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "3.2.+",
-      monix,
-      guice
+lazy val portPersistence =
+  Project(id = "port-persistence", base = portPersistenceBase)
+    .dependsOn(application % "compile->compile;test->test")
+    .settings(commonSettings)
+    .settings(
+      libraryDependencies ++= Seq(
+        "org.mariadb.jdbc" % "mariadb-java-client" % "1.5.7",
+        "org.skinny-framework" %% "skinny-orm" % "3.0.2",
+        "org.scalikejdbc" %% "scalikejdbc-test" % scalikejdbcVer % Test,
+        "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "3.2.+"
+      )
     )
-  )
 //  .settings(
 //    flywayUrl := persistenceDBConfLocal.getString("db.default.url"),
 //    flywayUser := persistenceDBConfLocal.getString("db.default.user"),
@@ -135,9 +131,3 @@ lazy val portDB = Project(
 //        .value
 //    }
 //  )
-
-// Adds additional packages into Twirl
-//TwirlKeys.templateImports += "takato.h0rikosh1@gmail.com.controllers._"
-
-// Adds additional packages into conf/routes
-// play.sbt.routes.RoutesKeys.routesImport += "takato.h0rikosh1@gmail.com.binders._"
