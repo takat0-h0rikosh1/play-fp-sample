@@ -30,7 +30,6 @@ lazy val commonSettings = Seq(
   sources in (Compile, doc) := Seq.empty,
   publishArtifact in (Compile, packageDoc) := false,
   updateOptions := updateOptions.value.withCachedResolution(true),
-  resolvers += Resolver.sonatypeRepo("releases"),
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3")
 )
 
@@ -41,14 +40,17 @@ lazy val portPersistenceBase = portBase / "secondary" / "persistence"
 
 lazy val persistenceDBConfLocal = ConfigFactory
   .defaultOverrides()
-  .withFallback(ConfigFactory.parseFile(
-    portPersistenceBase / "src" / "main" / "resources" / "db" / "db.local.conf"))
+  .withFallback(
+    ConfigFactory
+      .parseFile(portPersistenceBase / "src" / "main" / "resources" / "db" / "db.local.conf")
+  )
   .resolve()
 
 lazy val persistenceDBConfTest = ConfigFactory
   .defaultOverrides()
-  .withFallback(ConfigFactory.parseFile(
-    portPersistenceBase / "src" / "test" / "resources" / "application.conf"))
+  .withFallback(
+    ConfigFactory.parseFile(portPersistenceBase / "src" / "test" / "resources" / "application.conf")
+  )
   .resolve()
 
 lazy val core = Project(
@@ -59,13 +61,12 @@ lazy val core = Project(
   .disablePlugins(PlayLayoutPlugin)
   .settings(
     libraryDependencies := Seq(
-      "org.scalikejdbc" %% "scalikejdbc" % scalikejdbcVer,
+      "org.scalikejdbc" %% "scalikejdbc"                  % scalikejdbcVer,
       "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "2.7.0-scalikejdbc-3.3",
       guice
     ),
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
-    addCompilerPlugin(
-      "org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+    addCompilerPlugin("org.typelevel"   %% "kind-projector" % "0.10.3"),
+    addCompilerPlugin("org.scalamacros" % "paradise"        % "2.1.0" cross CrossVersion.full)
   )
   .aggregate(domain, application, port)
   .dependsOn(port % "compile->compile;test->test")
@@ -86,8 +87,8 @@ lazy val port = Project(
   base = portBase
 ).aggregate(portWebService, portPersistence)
   .dependsOn(
-    portWebService % "compile->compile;test->test",
-    portPersistence % "compile->compile;test->test",
+    portWebService  % "compile->compile;test->test",
+    portPersistence % "compile->compile;test->test"
   )
 
 lazy val portWebService = Project(
@@ -108,10 +109,10 @@ lazy val portPersistence = Project(
   .settings(commonSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "org.mariadb.jdbc" % "mariadb-java-client" % "1.5.7",
-      "org.skinny-framework" %% "skinny-orm" % "3.0.2",
-      "org.scalikejdbc" %% "scalikejdbc-test" % scalikejdbcVer % Test,
-      "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "3.2.+"
+      "org.mariadb.jdbc"     % "mariadb-java-client"               % "1.5.7",
+      "org.skinny-framework" %% "skinny-orm"                       % "3.0.2",
+      "org.scalikejdbc"      %% "scalikejdbc-test"                 % scalikejdbcVer % Test,
+      "org.scalikejdbc"      %% "scalikejdbc-syntax-support-macro" % "3.2.+"
     )
   )
 //  .settings(

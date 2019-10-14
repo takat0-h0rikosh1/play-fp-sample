@@ -12,9 +12,9 @@ trait BindableSupport {
 
   // bindable#bind(...): Option[Either[String, Option[A]]] の結果 が None の場合は Right(None) にする
   // これやりたいユースケースが意外と多い...
-  def bindToRightOption[A](key: String)(
-    implicit params: Params,
-    bindable: Bindable[A]): Either[String, Option[A]] =
+  def bindToRightOption[A](
+      key: String
+  )(implicit params: Params, bindable: Bindable[A]): Either[String, Option[A]] =
     EitherT(bindable.bind(key, params))
       .map(Option(_))
       .value

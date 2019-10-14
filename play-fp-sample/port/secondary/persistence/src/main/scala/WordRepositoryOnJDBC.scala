@@ -1,5 +1,6 @@
 import IOContextSupport.DBTask
 import cats.data.Kleisli
+import domain.{IOContextManager, Word, WordRepository}
 import monix.eval.Task
 import scalikejdbc.{AutoSession, DB, DBSession}
 
@@ -12,7 +13,7 @@ class IOContextManagerOnJDBC extends IOContextManager[Task, DBSession] {
   override def context: DBSession = AutoSession
 
   override def transactionalContext[T](
-    execution: DBSession => Task[T]
+      execution: DBSession => Task[T]
   ): Task[T] =
     Task.deferFutureAction { implicit scheduler =>
       DB.futureLocalTx { session =>

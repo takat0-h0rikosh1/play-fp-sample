@@ -1,6 +1,5 @@
 package bindable
 
-
 object Implicits
     extends SearchRequestBindable
     with NameBindable

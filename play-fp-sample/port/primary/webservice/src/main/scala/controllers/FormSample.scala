@@ -5,16 +5,10 @@ import javax.inject.Singleton
 import play.api.data.Forms._
 import play.api.data.format.{Formats, Formatter}
 import play.api.data.{Form, FormError}
-import play.api.mvc.{
-  AbstractController,
-  Action,
-  AnyContent,
-  ControllerComponents
-}
+import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
 @Singleton
-class FormSample @Inject()(cc: ControllerComponents)
-    extends AbstractController(cc) {
+class FormSample @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
 
   import SampleMapper._
 
@@ -42,8 +36,8 @@ trait CustomFormatter {
   implicit def userFormat: Formatter[Iam] = new Formatter[Iam] {
 
     override def bind(
-      key: String,
-      data: Map[String, String]
+        key: String,
+        data: Map[String, String]
     ): Either[Seq[FormError], Iam] = {
       Formats.stringFormat.bind(key, data).right.map(Iam)
     }

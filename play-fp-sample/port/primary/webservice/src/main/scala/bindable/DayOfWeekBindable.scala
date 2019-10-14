@@ -17,7 +17,8 @@ trait DayOfWeekBindable {
   private type Bound[A] = Option[Either[String, A]]
 
   implicit def dayOfWeekBinder(
-      implicit binder: Bindable[String]): Bindable[DayOfWeek] =
+      implicit binder: Bindable[String]
+  ): Bindable[DayOfWeek] =
     new Bindable[DayOfWeek] {
 
       override def bind(key: String, params: Params): Bound[DayOfWeek] = {
@@ -26,14 +27,18 @@ trait DayOfWeekBindable {
           dayOfWeek <- EitherT(
             Option(
               Try(DayOfWeek.valueOf(str.toUpperCase)).toEither
-                .leftMap(_.getMessage)))
+                .leftMap(_.getMessage)
+            )
+          )
         } yield dayOfWeek
         eitherT.value
       }
 
       override def unbind(key: String, value: DayOfWeek): String =
-        binder.unbind("dayOfWeek",
-                      value.getDisplayName(TextStyle.FULL, Locale.JAPAN))
+        binder.unbind(
+          "dayOfWeek",
+          value.getDisplayName(TextStyle.FULL, Locale.JAPAN)
+        )
 
     }
 

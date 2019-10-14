@@ -26,28 +26,27 @@ trait SearchRequestBindable extends BindableSupport {
       for {
         interval <- EitherT(intervalBindable.bind(key, params))
         dayOfWeek <- EitherT(
-          Option(bindToRightOption[Seq[DayOfWeek]]("dayOfWeek")))
+          Option(bindToRightOption[Seq[DayOfWeek]]("dayOfWeek"))
+        )
         note = EitherT(stringBinder.bind("note", params)).valueOrF(_ => None)
         limit <- EitherT(Option(bindToRightOption[Long]("limit")))
-      } yield
-        SearchRequest(
-          interval,
-          dayOfWeek.getOrElse(Seq.empty).toSet,
-          note.map(Note),
-          limit.map(Limit)
-        )
+      } yield SearchRequest(
+        interval,
+        dayOfWeek.getOrElse(Seq.empty).toSet,
+        note.map(Note),
+        limit.map(Limit)
+      )
     }.value
 
     override def unbind(key: String, r: R): String = {
-      def unbind[T](key: String, s: Option[T])(
-          implicit b: Bindable[T]): Option[String] =
+      def unbind[T](key: String, s: Option[T])(implicit b: Bindable[T]): Option[String] =
         s.map(f => b.unbind(key, f))
 
       val keys = Seq(
         unbind("from", Some(r.interval)),
         unbind("dayOfWeek", Some(r.dayOfWeeks.toSeq)),
         unbind("note", r.note.map(_.v)),
-        unbind("limit", r.limit.map(_.v)),
+        unbind("limit", r.limit.map(_.v))
       )
       keys.flatten.mkString("&")
     }

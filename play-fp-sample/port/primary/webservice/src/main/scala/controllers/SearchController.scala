@@ -3,15 +3,9 @@ package controllers
 import java.time.{Clock, DayOfWeek, Instant, ZonedDateTime}
 
 import javax.inject.Inject
-import play.api.mvc.{
-  AbstractController,
-  Action,
-  AnyContent,
-  ControllerComponents
-}
+import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
-class SearchController @Inject()(cc: ControllerComponents)
-    extends AbstractController(cc) {
+class SearchController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
 
   def get(r: SearchRequest): Action[AnyContent] = Action {
     Ok(r.toString)
@@ -59,8 +53,10 @@ object Interval {
 
   // どちらも指定がない場合は全期間を対象とする
   def all()(implicit c: Clock): Interval =
-    Interval(ZonedDateTime.ofInstant(Instant.EPOCH, c.getZone),
-             ZonedDateTime.now(c))
+    Interval(
+      ZonedDateTime.ofInstant(Instant.EPOCH, c.getZone),
+      ZonedDateTime.now(c)
+    )
 
   def apply(from: Option[Long], to: Option[Long])(implicit c: Clock): Interval =
     (from, to) match {
@@ -71,4 +67,3 @@ object Interval {
     }
 
 }
-

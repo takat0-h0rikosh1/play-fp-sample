@@ -12,7 +12,8 @@ trait SampleBindable {
   ): QueryStringBindable[AgeRange] = new QueryStringBindable[AgeRange] {
     override def bind(
         key: String,
-        params: Map[String, Seq[String]]): Option[Either[String, AgeRange]] = {
+        params: Map[String, Seq[String]]
+    ): Option[Either[String, AgeRange]] = {
       for {
         from <- intBinder.bind("from", params)
         to <- intBinder.bind("to", params)

@@ -6,7 +6,6 @@ import play.api.data.Forms._
 import play.api.data.format.{Formats, Formatter}
 import play.api.mvc.{AbstractController, ControllerComponents}
 
-@Singleton
 class SampleController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
 
   def index = Action {
@@ -16,7 +15,8 @@ class SampleController @Inject()(cc: ControllerComponents) extends AbstractContr
   import UserFormBinder._
 
   def post() = Action { implicit request =>
-    userForm.bindFromRequest()
+    userForm
+      .bindFromRequest()
       .fold(e => BadRequest(e.errors.toString), user => Ok(user.toString))
   }
 }
@@ -36,7 +36,10 @@ object UserFormBinder {
 object UserFormatter {
 
   implicit def userFormat: Formatter[Name] = new Formatter[Name] {
-    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Name] = {
+    override def bind(
+        key: String,
+        data: Map[String, String]
+    ): Either[Seq[FormError], Name] = {
       Formats.stringFormat.bind(key, data).right.map(Name)
       //      data.get(key).map(x => Right(Name(x))).getOrElse(Left(Seq(FormError(key, "error: require.name"))))
     }
@@ -47,7 +50,10 @@ object UserFormatter {
   }
 
   implicit def textValue: Formatter[TextValue] = new Formatter[TextValue] {
-    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], TextValue] = {
+    override def bind(
+        key: String,
+        data: Map[String, String]
+    ): Either[Seq[FormError], TextValue] = {
       Formats.stringFormat.bind(key, data).right.map(TextValue)
       //      data.get(key).map(x => Right(TextValue(x))).getOrElse(Left(Seq(FormError(key, "error: require.textValue"))))
     }

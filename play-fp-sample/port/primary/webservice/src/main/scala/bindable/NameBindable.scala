@@ -10,7 +10,8 @@ trait NameBindable {
   ): QueryStringBindable[Name] = new QueryStringBindable[Name] {
     override def bind(
         key: String,
-        params: Map[String, Seq[String]]): Option[Either[String, Name]] = {
+        params: Map[String, Seq[String]]
+    ): Option[Either[String, Name]] = {
       binder.bind("name", params).map(_.map(Name))
 
     }

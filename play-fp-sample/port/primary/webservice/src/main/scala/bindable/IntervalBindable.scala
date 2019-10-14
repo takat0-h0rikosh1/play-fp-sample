@@ -15,7 +15,8 @@ trait IntervalBindable extends BindableSupport {
   private implicit lazy val clock: Clock = Clock.systemDefaultZone()
 
   implicit def intervalBinder(
-      implicit binder: Bindable[Long]): Bindable[Interval] =
+      implicit binder: Bindable[Long]
+  ): Bindable[Interval] =
     new Bindable[Interval] {
 
       override def bind(key: String, params: Params): Bound[Interval] =

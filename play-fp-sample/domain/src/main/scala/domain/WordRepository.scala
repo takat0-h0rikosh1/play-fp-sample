@@ -1,3 +1,5 @@
+package domain
+
 trait IOContextManager[F[_], Ctx] {
 
   def context: Ctx
