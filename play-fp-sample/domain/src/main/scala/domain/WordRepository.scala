@@ -21,7 +21,7 @@ trait WordResolveUseCase[F[_]] {
   def resolveAll: F[Seq[Word]]
 }
 
-class WordResolveUseCaseImpl[F[_]](repository: WordRepository[F]) {
+class WordResolveUseCaseImpl[F[_]](repository: WordRepository[F]) extends WordResolveUseCase[F] {
 
   def resolveAll: F[Seq[Word]] = repository.resolveAll
 }

@@ -30,7 +30,8 @@ lazy val commonSettings = Seq(
   sources in (Compile, doc) := Seq.empty,
   publishArtifact in (Compile, packageDoc) := false,
   updateOptions := updateOptions.value.withCachedResolution(true),
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3")
+  addCompilerPlugin("org.typelevel"   %% "kind-projector" % "0.10.3"),
+  addCompilerPlugin("org.scalamacros" % "paradise"        % "2.1.0" cross CrossVersion.full)
 )
 
 lazy val coreBase = file("play-fp-sample")
@@ -63,7 +64,8 @@ lazy val core = Project(
     libraryDependencies := Seq(
       "org.scalikejdbc" %% "scalikejdbc"                  % scalikejdbcVer,
       "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "2.7.0-scalikejdbc-3.3",
-      guice
+      guice,
+      "com.softwaremill.macwire" %% "macros" % "2.3.3" % Provided
     ),
     addCompilerPlugin("org.typelevel"   %% "kind-projector" % "0.10.3"),
     addCompilerPlugin("org.scalamacros" % "paradise"        % "2.1.0" cross CrossVersion.full)
