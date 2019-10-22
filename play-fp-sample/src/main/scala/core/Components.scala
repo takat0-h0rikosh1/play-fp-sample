@@ -9,8 +9,8 @@ import controllers.{
   SearchController,
   WordController
 }
-import dbport.IOContextSupport.DBTask
-import dbport.{IOContextManagerOnJDBC, WordRepositoryOnJDBC}
+import dbadapter.IOContextSupport.DBTask
+import dbadapter.{IOContextManagerOnJDBC, WordRepositoryOnJDBC}
 import domain.{IOContextManager, WordRepository, WordResolveUseCase, WordResolveUseCaseImpl}
 import monix.eval.Task
 import play.api.mvc.ControllerComponents

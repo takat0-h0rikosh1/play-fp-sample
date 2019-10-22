@@ -1,7 +1,7 @@
-package dbport
+package dbadapter
 
 import cats.data.Kleisli
-import dbport.IOContextSupport.DBTask
+import dbadapter.IOContextSupport.DBTask
 import domain.{IOContextManager, Word, WordRepository}
 import monix.eval.Task
 import scalikejdbc.{AutoSession, DB, DBSession}
